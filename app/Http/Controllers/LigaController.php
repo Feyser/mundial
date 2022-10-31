@@ -52,7 +52,7 @@ class LigaController extends Controller
 
         $mundial = Mundial::where('estado', 'A')->firstOrFail();
         $liga = Liga::create([
-            'usuario_id' => $user,
+            'usuario_id' => $usuario['id'],
             'mundial_id' => $mundial['id'],
             'nombre' => $request->nombre,
             'fecha_registro' => Carbon::now(),

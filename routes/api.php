@@ -34,6 +34,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('/estadio', [MundialController::class, 'estadio']);
     Route::get('/mundiales', [MundialController::class, 'index']);
     Route::post('/create-mundial', [MundialController::class, 'create']);
+    Route::post('/finalizar', [MundialController::class, 'finalizar']);
     Route::put('/update-mundial/{id}', [MundialController::class, 'update']);
 
     Route::post('/selecciones', [PaisesController::class, 'index']);
@@ -42,7 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     Route::post('/partidos', [JornadaController::class, 'index']);
     Route::post('/jornada', [JornadaController::class, 'create']);
-    Route::post('/marcador/{id}', [JornadaController::class, 'update']);
+    Route::put('/marcador/{id}', [JornadaController::class, 'update']);
 
     Route::get('/ligas', [LigaController::class, 'index']);
     Route::post('/create-liga', [LigaController::class, 'create']);

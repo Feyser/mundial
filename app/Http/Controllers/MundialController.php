@@ -9,6 +9,7 @@ use App\Models\Pais;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MundialController extends Controller
@@ -67,7 +68,7 @@ class MundialController extends Controller
         }
 
         $ciudad = Ciudad::create([
-            'pais' => $request->pais,
+            'pais_id' => $request->pais,
             'nombre' => $request->nombre
         ]);
 
@@ -93,7 +94,7 @@ class MundialController extends Controller
         }
 
         $pais = Estadio::create([
-            'ciudad' => $request->ciudad,
+            'ciudad_id' => $request->ciudad,
             'nombre' => $request->nombre
         ]);
 
@@ -168,5 +169,36 @@ class MundialController extends Controller
 
         return response()
             ->json(['message' => 'Sede actualizada']);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function finalizar(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'sede' => 'required|int|min:1',
+            'descripcion' => 'required|string|max:250'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([$validator->errors()]);
+        }
+
+        $user = auth()->id();
+        $usuario = Usuario::where('usuario', $user)->firstOrFail();
+        if (intval($usuario['rol_id']) !== 1) {
+            return response()
+                ->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $mundial = Mundial::where('estado', 'A')->firstOrFail();
+        DB::select("exec sp_fin_apuesta(?)", array($mundial['id']));
+
+        return response()
+            ->json(['data' => $mundial]);
     }
 }

@@ -49,7 +49,7 @@ class PaisesController extends Controller
 
         $mundial = Mundial::where('estado', 'A')->firstOrFail();
         $pais = PaisesClasificado::create([
-            'pais_id' => $request->sede,
+            'pais_id' => $request->pais,
             'mundial_id' => $mundial['id'],
             'participacion' => 'A'
         ]);
