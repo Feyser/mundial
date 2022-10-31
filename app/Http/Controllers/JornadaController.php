@@ -7,7 +7,9 @@ use App\Models\Mundial;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use \stdClass;
 
 class JornadaController extends Controller
 {
@@ -37,7 +39,7 @@ class JornadaController extends Controller
             'ronda' => 'required|int|min:1',
             'local' => 'required|int|min:1',
             'visitante' => 'required|int|min:1',
-            'fecha' => 'required|date',
+            'fecha' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -53,12 +55,12 @@ class JornadaController extends Controller
 
         $mundial = Mundial::where('estado', 'A')->firstOrFail();
         $pais = Jornada::create([
-            'estadio_id' => $request->sede,
+            'estadio_id' => $request->estadio,
             'local_id' => $mundial['id'],
             'visitante_id' => $request->visitante,
             'mundial_id' => $mundial['id'],
             'ronda_id' => $request->ronda,
-            'fecha' => $request->fecha
+            'fecha' => Carbon::now()
         ]);
 
         return response()
@@ -95,6 +97,9 @@ class JornadaController extends Controller
         $sede->marcador_visitante = $request->visitante;
         $sede->update();
 
+        $mundial = Mundial::where('estado', 'A')->firstOrFail();
+        //DB::select("exec sp_upd_apuesta(?,?,?,?)", array($mundial['id'], $id, $request->local, $request->visitante));
+        DB::select("call sp_upd_apuesta({$mundial['id']},{$id},{$request->local},{$request->visitante})");
         return response()
             ->json(['message' => 'Resultados actualizados']);
     }
